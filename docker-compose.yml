@@ -11,6 +11,23 @@ services:
       - ./public:/var/www/public
 
   php72:
-    image: php:7.2.4-fpm-alpine
+    build: ./docker/php72
+    env_file: docker/mysql/.env
+    environment:
+      DATABASE_HOST: db
+    depends_on:
+        - db
     volumes:
       - ./public:/var/www/public
+
+  db:
+    image: mysql:5.7.21
+    env_file: docker/mysql/.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./docker/mysql/files/default.sql:/docker-entrypoint-initdb.d/default.sql
+
+volumes:
+  db-data:
